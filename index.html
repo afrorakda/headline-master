@@ -13,7 +13,7 @@
     <style>
         :root {
             --bg: #fff;
-            --main: #111;
+            --main: #333; /* 憲法遵守：#333 */
             --accent: #eee;
             --input-bg: #fafafa;
             --radius: 15px;
@@ -32,7 +32,7 @@
         }
 
         header { text-align: center; }
-        h1 { font-size: 1.8rem; font-weight: 900; margin: 0; letter-spacing: -1px; }
+        h1 { font-size: 1.8rem; font-weight: 900; margin: 0; letter-spacing: -1px; color: var(--main); }
         .description { font-size: 0.85rem; color: #666; margin-top: 5px; font-weight: 500; }
 
         .input-group { display: flex; flex-direction: column; gap: 8px; }
@@ -46,32 +46,31 @@
             resize: none; outline: none; transition: border-color 0.2s;
             line-height: 1.4; font-weight: 500;
         }
-        textarea:focus { border-color: #111; }
+        textarea:focus { border-color: var(--main); }
 
         .action-btn {
-            width: 100%; background-color: #111; color: #fff;
+            width: 100%; background-color: var(--main); color: #fff;
             border: none; border-radius: var(--radius);
             padding: 18px; font-size: 1rem; font-weight: 800;
             cursor: pointer; transition: transform 0.1s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .action-btn:active { transform: scale(0.98); opacity: 0.9; }
 
         .result-area {
             width: 100%; min-height: 80px;
-            background-color: #fff; border: 2px solid #111;
+            background-color: #fff; border: 2px solid var(--main);
             border-radius: var(--radius); padding: 15px;
-            font-size: 1.1rem; font-weight: 700; color: #111; box-sizing: border-box;
+            font-size: 1.1rem; font-weight: 700; color: var(--main); box-sizing: border-box;
             display: flex; align-items: center; justify-content: center;
             text-align: center; cursor: pointer; transition: background 0.2s;
         }
         .result-area:active { background-color: #f0f0f0; }
 
-        .status-msg { height: 20px; text-align: center; font-size: 0.8rem; font-weight: bold; color: #111; }
+        .status-msg { height: 20px; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--main); }
 
         .support-section { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 30px; }
-        .kofi-btn { background-color: #111; color: #fff; text-decoration: none; padding: 12px 25px; border-radius: var(--radius); font-weight: bold; font-size: 0.9rem; }
-        .home-btn { background-color: #eee; color: #666; border: none; padding: 10px 20px; border-radius: var(--radius); font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+        .kofi-btn { background-color: var(--main); color: #fff; text-decoration: none; padding: 12px 25px; border-radius: var(--radius); font-weight: bold; font-size: 0.9rem; }
+        .home-btn { background-color: var(--accent); color: #666; border: none; padding: 10px 20px; border-radius: var(--radius); font-size: 0.85rem; font-weight: bold; cursor: pointer; }
 
         footer { width: 100%; padding: 30px 0; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.5; }
 
@@ -81,7 +80,6 @@
     </style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <h1>Headline Master</h1>
@@ -131,15 +129,11 @@
     function transformTitle() {
         const input = document.getElementById('input-box').value.trim();
         const resultBox = document.getElementById('result-box');
-        
         if (!input) return;
 
-        // 小文字のままにすべき単語リスト (AP Style)
         const minorWords = ['a', 'an', 'the', 'and', 'but', 'for', 'at', 'by', 'for', 'in', 'of', 'on', 'or', 'up', 'with', 'to', 'from', 'nor', 'yet', 'so'];
-
         const words = input.toLowerCase().split(' ');
         const transformed = words.map((word, index) => {
-            // 文頭、文末、またはリストにない単語は大文字にする
             if (index === 0 || index === words.length - 1 || !minorWords.includes(word)) {
                 return word.charAt(0).toUpperCase() + word.slice(1);
             }
@@ -148,13 +142,12 @@
 
         const finalTitle = transformed.join(' ');
         resultBox.innerText = finalTitle;
-        resultBox.style.color = "#111";
+        resultBox.style.color = "var(--main)";
     }
 
     function copyResult() {
         const text = document.getElementById('result-box').innerText;
         if (text === "Your professional title here") return;
-
         navigator.clipboard.writeText(text).then(() => {
             const status = document.getElementById('status');
             status.innerText = "✨ Copied to clipboard!";
@@ -165,6 +158,5 @@
     function showModal() { document.getElementById('installModal').style.display = 'flex'; }
     function closeModal() { document.getElementById('installModal').style.display = 'none'; }
 </script>
-
 </body>
 </html>
