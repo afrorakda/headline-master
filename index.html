@@ -84,7 +84,11 @@
             font-size: 1.2rem; font-weight: 800; color: var(--main);
             display: flex; align-items: center; justify-content: center;
             text-align: center; cursor: pointer; word-break: break-word;
+            transition: background 0.1s, transform 0.1s;
+            user-select: none;
         }
+        /* タップ時のフィードバック */
+        .result-area:active { background-color: var(--accent); transform: scale(0.98); }
 
         .status-msg { height: 24px; text-align: center; font-size: 0.8rem; font-weight: 800; color: #4CAF50; }
 
@@ -115,7 +119,7 @@
     
     <div class="input-group">
         <label>INPUT HEADLINE</label>
-        <textarea id="input-box" placeholder="e.g. how to make a perfect coffee with ai"></textarea>
+        <textarea id="input-box" placeholder="e.g. high-quality coffee with ai"></textarea>
         <button class="clr-btn" onclick="clearInput()">×</button>
     </div>
 
@@ -157,17 +161,38 @@
 
 <script>
     function transformTitle() {
-        const input = document.getElementById('input-box').value.trim();
+        const inputBox = document.getElementById('input-box');
+        const input = inputBox.value.trim();
         const resultBox = document.getElementById('result-box');
-        if (!input) return;
+        
+        if (!input) {
+            resultBox.innerHTML = '<span style="color: #e57373;">Please enter text...</span>';
+            return;
+        }
 
         const minorWords = ['a', 'an', 'the', 'and', 'but', 'for', 'at', 'by', 'in', 'of', 'on', 'or', 'up', 'with', 'to', 'from', 'nor', 'yet', 'so'];
-        const words = input.toLowerCase().split(/\s+/);
-        const transformed = words.map((word, index) => {
-            if (index === 0 || index === words.length - 1 || !minorWords.includes(word)) {
-                return word.charAt(0).toUpperCase() + word.slice(1);
+        
+        // ハイフンやスペースで分割し、特殊文字を保持する処理
+        const transformWord = (word, isFirstOrLast) => {
+            if (isFirstOrLast || !minorWords.includes(word.toLowerCase())) {
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
             }
-            return word;
+            return word.toLowerCase();
+        };
+
+        const words = input.split(/\s+/);
+        const transformed = words.map((word, index) => {
+            const isFirstOrLast = (index === 0 || index === words.length - 1);
+            
+            // ハイフンが含まれる場合（high-quality -> High-Quality）
+            if (word.includes('-')) {
+                return word.split('-').map((part, pIdx, pArr) => {
+                    const isSubFirstOrLast = (isFirstOrLast && (pIdx === 0 || pIdx === pArr.length - 1));
+                    return transformWord(part, isSubFirstOrLast || pIdx > 0);
+                }).join('-');
+            }
+            
+            return transformWord(word, isFirstOrLast);
         });
 
         resultBox.innerText = transformed.join(' ');
@@ -175,8 +200,10 @@
     }
 
     function copyResult() {
-        const text = document.getElementById('result-box').innerText;
-        if (text === "Your result here") return;
+        const resultBox = document.getElementById('result-box');
+        const text = resultBox.innerText;
+        if (text === "Your result here" || text === "Please enter text...") return;
+        
         navigator.clipboard.writeText(text).then(() => {
             const status = document.getElementById('status');
             status.innerText = "✨ Copied to clipboard!";
