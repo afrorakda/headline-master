@@ -89,11 +89,13 @@
             transition: background 0.1s, transform 0.1s;
             user-select: none;
         }
-        /* PCホバー */
+
+        /* PCホバー（指アイコンと背景微変） */
         @media (hover: hover) {
-            .result-area:hover { background-color: var(--hover-bg); }
+            .result-area:hover { background-color: var(--hover-bg); cursor: pointer; }
         }
-        /* タップ・クリック時 */
+
+        /* 全デバイス共通：タップ・クリック時のフィードバック */
         .result-area:active { 
             background-color: var(--tap-feedback) !important; 
             transform: scale(0.98); 
@@ -107,7 +109,6 @@
             width: 100%; max-width: 240px; background: #fff; color: var(--main); border: 2px solid var(--main); 
             padding: 12px; border-radius: var(--radius); text-decoration: none; 
             font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
         }
         .privacy-link { color: inherit; text-decoration: underline; }
         .copy-info { font-size: 11px; color: #999; font-weight: 600; line-height: 1.6; }
@@ -195,7 +196,6 @@
             
             if (word.includes('-')) {
                 return word.split('-').map((part, pIdx, pArr) => {
-                    // ハイフン区切りでも文頭・文末、またはハイフンの後は原則大文字
                     const isSubFirstOrLast = (isFirstOrLast && (pIdx === 0 || pIdx === pArr.length - 1));
                     return transformWord(part, isSubFirstOrLast || pIdx > 0);
                 }).join('-');
@@ -211,7 +211,9 @@
     function copyResult() {
         const resultBox = document.getElementById('result-box');
         const text = resultBox.innerText;
-        if (text === "Your result here" || text === "Please enter text...") return;
+        
+        // ガード：初期状態や案内メッセージ、未入力警告の時はコピーしない
+        if (text === "Your result here" || text === "Please enter text..." || resultBox.querySelector('span')) return;
         
         navigator.clipboard.writeText(text).then(() => {
             const status = document.getElementById('status');
